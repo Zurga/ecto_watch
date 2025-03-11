@@ -14,9 +14,17 @@ defmodule EctoWatch.Adapter.Registry do
   end
 
   @impl true
-  def dispatch(pub_sub_mod, topic, message) do
+  def dispatch(pub_sub_mod, topic, message, middleware \\ []) do
+    message =
+      Enum.reduce(middleware, message, fn module, message -> module.run_for_all(message) end)
+
     Registry.dispatch(pub_sub_mod, topic, fn pids ->
       for {pid, _} <- pids do
+        message =
+          Enum.reduce(middleware, message, fn module, message ->
+            module.run_for_pid(pid, message)
+          end)
+
         send(pid, message)
       end
     end)
