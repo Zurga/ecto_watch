@@ -35,16 +35,16 @@ defmodule EctoWatch.WatcherServer do
     end
   end
 
-  def start_link({repo_mod, pub_sub_mod, watcher_options}) do
+  def start_link({repo_mod, pub_sub_mod, dispatcher, watcher_options}) do
     GenServer.start_link(
       __MODULE__,
-      {repo_mod, pub_sub_mod, watcher_options},
+      {repo_mod, pub_sub_mod, dispatcher, watcher_options},
       name: unique_label(watcher_options)
     )
   end
 
   @impl true
-  def init({repo_mod, pub_sub_mod, options}) do
+  def init({repo_mod, pub_sub_mod, dispatcher, options}) do
     debug_log(options, "Starting server")
 
     unique_label = "#{unique_label(options)}"
@@ -121,6 +121,7 @@ defmodule EctoWatch.WatcherServer do
      %{
        repo_mod: repo_mod,
        pub_sub_mod: pub_sub_mod,
+       dispatcher: dispatcher,
        unique_label: unique_label,
        identifier_columns:
          MapSet.put(
@@ -226,7 +227,7 @@ defmodule EctoWatch.WatcherServer do
         "Broadcasting to Phoenix PubSub topic `#{topic}`: #{inspect(message)}"
       )
 
-      Phoenix.PubSub.broadcast(state.pub_sub_mod, topic, message)
+      Phoenix.PubSub.broadcast(state.pub_sub_mod, topic, message, state.dispatcher)
     end
 
     {:noreply, state}
