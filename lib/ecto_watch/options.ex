@@ -3,7 +3,7 @@ defmodule EctoWatch.Options do
 
   alias EctoWatch.Options.WatcherOptions
 
-  defstruct [:repo_mod, :pub_sub_mod, :watchers, :debug?]
+  defstruct [:repo_mod, :pub_sub_mod, :dispatcher, :watchers, :debug?]
 
   def new(opts) do
     %__MODULE__{
