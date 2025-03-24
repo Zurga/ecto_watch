@@ -27,7 +27,7 @@ defmodule EctoWatch.Options do
         type: {:custom, __MODULE__, :check_valid_pubsub_module, []},
         required: true
       ],
-      dispatcher: [type: atom, required: false, default: Phoenix.PubSub],
+      dispatcher: [type: :atom, required: false, default: Phoenix.PubSub],
       watchers: [
         type: {:custom, WatcherOptions, :validate_list, []},
         required: true
